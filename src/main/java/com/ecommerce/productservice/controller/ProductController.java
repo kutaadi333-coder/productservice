@@ -27,7 +27,29 @@ public class ProductController {
         this.productService = productService;
     }
 
+    // =========================================================
+    // PUBLIC API
+    // =========================================================
+
+    @Operation(
+            summary = "Public product API",
+            description = "Public endpoint that can be accessed without authentication."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Public API accessed successfully"
+            )
+    })
+    @GetMapping("/public")
+    public ResponseEntity<String> publicProductApi() {
+        return ResponseEntity.ok("This is a public Product API");
+    }
+
+    // =========================================================
     // CREATE
+    // =========================================================
+
     @Operation(
             summary = "Create a new product",
             description = "Creates a new product using the provided product details."
@@ -56,7 +78,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // =========================================================
     // GET ALL
+    // =========================================================
+
     @Operation(
             summary = "Get products",
             description = "Returns a paginated list of products with optional sorting and filtering."
@@ -191,7 +216,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // =========================================================
     // GET BY ID
+    // =========================================================
+
     @Operation(
             summary = "Get product by ID",
             description = "Retrieves a single product using its unique product ID."
@@ -236,7 +264,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // =========================================================
     // PUT
+    // =========================================================
+
     @Operation(
             summary = "Update a product",
             description = "Performs a full update of an existing product."
@@ -285,7 +316,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // =========================================================
     // PATCH
+    // =========================================================
+
     @Operation(
             summary = "Partially update a product",
             description = "Updates only the product fields provided in the request."
@@ -334,7 +368,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // =========================================================
     // DELETE
+    // =========================================================
+
     @Operation(
             summary = "Delete a product",
             description = "Deletes an existing product using its unique product ID."
