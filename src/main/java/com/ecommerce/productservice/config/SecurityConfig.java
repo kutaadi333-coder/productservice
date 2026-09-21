@@ -16,9 +16,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
-
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
@@ -28,54 +26,76 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // REST API - CSRF disabled
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // H2 Console
                 .headers(headers ->
-                        headers.frameOptions(frameOptions ->
-                                frameOptions.disable()
-                        )
+                        headers.frameOptions(frameOptions -> frameOptions.disable())
                 )
 
-                // JWT is stateless
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // API authorization
                 .authorizeHttpRequests(auth -> auth
 
                         // Public APIs
                         .requestMatchers(
-                                "/api/v1/auth/**",
                                 "/api/v1/products/public",
+                                "/api/v1/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/h2-console/**"
                         ).permitAll()
 
-                        // Protected Product APIs
+                        // USER + MANAGER + ADMIN
+                        // View products
                         .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
                                 "/api/v1/products",
                                 "/api/v1/products/**"
-                        ).authenticated()
+                        ).hasAnyRole("USER", "MANAGER", "ADMIN")
 
-                        // Other requests
+                        // MANAGER + ADMIN
+                        // Create product
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/products"
+                        ).hasAnyRole("MANAGER", "ADMIN")
+
+                        // MANAGER + ADMIN
+                        // Update product
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.PUT,
+                                "/api/v1/products/**"
+                        ).hasAnyRole("MANAGER", "ADMIN")
+
+                        // MANAGER + ADMIN
+                        // Partial update product
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.PATCH,
+                                "/api/v1/products/**"
+                        ).hasAnyRole("MANAGER", "ADMIN")
+
+                        // ADMIN only
+                        // Delete product
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/products/**"
+                        ).hasRole("ADMIN")
+
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
 
-                // Add JWT filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
-                );
+                )
+
+                .httpBasic(httpBasic -> {});
 
         return http.build();
     }

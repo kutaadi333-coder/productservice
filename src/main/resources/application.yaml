@@ -25,6 +25,12 @@ spring:
       enabled: true
       path: /h2-console
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 jwt:
   secret: ${JWT_SECRET}
   access-expiration: 900000
