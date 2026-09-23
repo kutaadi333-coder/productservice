@@ -1,0 +1,16 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: ${PROD_DB_URL:jdbc:postgresql://localhost:5432/user_db_prod}
+    username: ${PROD_DB_USERNAME:postgres}
+    password: ${PROD_DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    root: ERROR
+    com.company.userservice: INFO
